@@ -1,0 +1,100 @@
+﻿@using Microsoft.AspNetCore.Components
+@using RegistrationApp.Data
+@model IEnumerable<RegistrationApp.Data.Entities.User>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+
+<div class="row">
+    <h1>List of registered users</h1>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>@Html.ActionLink("Id", "Index", new { sortingProp = ViewBag.IdSortParm })</th>
+                <th>@Html.ActionLink("FullName", "Index", new { sortingProp = ViewBag.NameSortParm })</th>
+                <th>@Html.ActionLink("Age", "Index", new { sortingProp = ViewBag.AgeSortParm })</th>
+                <th>@Html.ActionLink("City", "Index", new { sortingProp = ViewBag.CitySortParm })</th>
+                <th>@Html.ActionLink("Email", "Index", new { sortingProp = ViewBag.EmailSortParm })</th>
+                <th>@Html.ActionLink("PhoneNumber", "Index", new { sortingProp = ViewBag.PhoneNumberSortParm })</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model)
+            {
+                @if (user == Model.Last())
+                {
+                    <tr bgcolor="red">
+                        <td>@Html.DisplayFor(model => user.Id)</td>
+                        <td>@Html.DisplayFor(modeluser => user.FullName)</td>
+                        <td>@Html.DisplayFor(modeluser => user.Age)</td>
+                        <td>@Html.DisplayFor(modeluser => user.City)</td>
+                        <td>@Html.DisplayFor(modeluser => user.Email)</td>
+                        <td>@Html.DisplayFor(modeluser => user.PhoneNumber)</td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(model => user.Id)</td>
+                        <td>@Html.DisplayFor(modeluser => user.FullName)</td>
+                        <td>@Html.DisplayFor(modeluser => user.Age)</td>
+                        <td>@Html.DisplayFor(modeluser => user.City)</td>
+                        <td>@Html.DisplayFor(modeluser => user.Email)</td>
+                        <td>@Html.DisplayFor(modeluser => user.PhoneNumber)</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<div>
+    @{
+        ViewData["Title"] = "RegisterUser";
+    }
+
+    <div border-width:medium border="5">
+        <h1>Register the new user</h1>
+        @using (Html.BeginForm("CreateUser", "Home", FormMethod.Post))
+        {
+            <div>
+                @Html.Label("FullName", "Enter your full name")
+                <input type="text" id="FullName" name="FullName" pattern="^(\w\w+)\s(\w+)\s(\w+)$" required />
+            </div>
+
+            <div>
+                @Html.Label("Age", "Enter your age")
+                <input type="number" id="Age" name="Age" min="16" max="110" required />
+            </div>
+
+            <div>
+                @Html.Label("City", "Enter your city")
+                <input type="city" id="City" name="City" required />
+            </div>
+
+            <div>
+                @Html.Label("Email", "Enter your email")
+                <input type="email" id="Email" name="Email" />
+            </div>
+
+            <div>
+                @Html.Label("PhoneNumber", "Enter your phone number")
+                <input type="PhoneNumber" id="PhoneNumber" name="PhoneNumber" pattern="^\+38\d{3}\d{7}$" value="+38" maxlength="13" />
+            </div>
+
+            <p><input type="submit" value="Send" /></p>
+        }
+    </div>
+
+</div>
