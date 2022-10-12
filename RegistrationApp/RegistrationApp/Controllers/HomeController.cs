@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RegistrationApp.Models;
 using System.Diagnostics;
+using RegistrationApp.Data.Entities;
 using RegistrationApp.Services.Abstraction;
 
 namespace RegistrationApp.Controllers
@@ -19,8 +20,6 @@ namespace RegistrationApp.Controllers
         public IActionResult Index(string sortingProp)
         {
             var userList = _service.GetUsersList();
-
-            var sortedList =
 
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortingProp) ? "FullName" : "";
             ViewBag.IdSortParm = string.IsNullOrEmpty(sortingProp) ? "Id" : "";
@@ -58,18 +57,18 @@ namespace RegistrationApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateUser([FromForm] string fullName, int age, string city, string email,
-            string phoneNumber)
+        public IActionResult CreateUser(User newUser)
         {
 
-            _service.SaveUser(fullName, age, city, email, phoneNumber);
+            _service.SaveUser(newUser);
 
             return RedirectToAction("Index");
         }
-
-        public IActionResult Privacy()
+        [HttpPost]
+        public JsonResult CheckFullName([FromBody] string fullName)
         {
-            return View();
+            var isValid = _service.IsUserExist(fullName);
+            return Json(isValid);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

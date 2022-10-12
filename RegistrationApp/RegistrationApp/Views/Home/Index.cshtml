@@ -1,14 +1,47 @@
-﻿@using Microsoft.AspNetCore.Components
-@using RegistrationApp.Data
-@model IEnumerable<RegistrationApp.Data.Entities.User>
+﻿@model IEnumerable<RegistrationApp.Data.Entities.User>
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    @{
+        ViewData["Title"] = "RegisterUser";
+    }
+
+    <div  class="register-card">
+        <h1>Register the new user</h1>
+        @using (Html.BeginForm("CreateUser", "Home", FormMethod.Post))
+        {
+            <div>
+                @Html.Label("FullName", "Enter your full name")
+                <input type="text" id="FullName" name="FullName" pattern="^(\w\w+)\s(\w+)\s(\w+)$" onblur="CheckAvailability()" required />
+                <span id="message" onclick="ClearMessage()"></span>
+            </div>
+
+            <div>
+                @Html.Label("Age", "Enter your age")
+                <input type="number" id="Age" name="Age" min="16" max="110" required />
+            </div>
+
+            <div>
+                @Html.Label("City", "Enter your city")
+                <input type="text" id="City" name="City" required />
+            </div>
+
+            <div>
+                @Html.Label("Email", "Enter your email")
+                <input type="email" id="Email" name="Email" />
+            </div>
+
+            <div>
+                @Html.Label("PhoneNumber", "Enter your phone number")
+                <input type="tel" id="PhoneNumber" name="PhoneNumber" pattern="^\+38\d{3}\d{7}$" value="+38" maxlength="13" />
+            </div>
+            
+            <p><input type="submit" value="Send" id="submit" /></p>
+        }
+    </div>
 </div>
 
 
@@ -56,45 +89,10 @@
         </table>
     </div>
 </div>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="js/site.js"></script>
+    
 
 
 
-<div>
-    @{
-        ViewData["Title"] = "RegisterUser";
-    }
 
-    <div border-width:medium border="5">
-        <h1>Register the new user</h1>
-        @using (Html.BeginForm("CreateUser", "Home", FormMethod.Post))
-        {
-            <div>
-                @Html.Label("FullName", "Enter your full name")
-                <input type="text" id="FullName" name="FullName" pattern="^(\w\w+)\s(\w+)\s(\w+)$" required />
-            </div>
-
-            <div>
-                @Html.Label("Age", "Enter your age")
-                <input type="number" id="Age" name="Age" min="16" max="110" required />
-            </div>
-
-            <div>
-                @Html.Label("City", "Enter your city")
-                <input type="city" id="City" name="City" required />
-            </div>
-
-            <div>
-                @Html.Label("Email", "Enter your email")
-                <input type="email" id="Email" name="Email" />
-            </div>
-
-            <div>
-                @Html.Label("PhoneNumber", "Enter your phone number")
-                <input type="PhoneNumber" id="PhoneNumber" name="PhoneNumber" pattern="^\+38\d{3}\d{7}$" value="+38" maxlength="13" />
-            </div>
-
-            <p><input type="submit" value="Send" /></p>
-        }
-    </div>
-
-</div>

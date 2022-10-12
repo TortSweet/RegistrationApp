@@ -6,24 +6,36 @@ namespace RegistrationApp.Services
 {
     public class UserService : IUserService
     {
+        private readonly ISqliteDataAccess _dataAccess;
+
+        public UserService(ISqliteDataAccess dataAccess)
+        {
+            _dataAccess = dataAccess;
+        }
+
         public IQueryable<User> GetUsersList()
         {
-            var users = SqliteDataAccess.LoadUsers().AsQueryable();
+            var users = _dataAccess.LoadUsers().AsQueryable();
+
             return users;
         }
 
-        public void SaveUser(string fullName, int age, string city, string email, string phoneNumber)
+        public void SaveUser(User newUser)
         {
-            var newUser = new User()
+            if (newUser == null)
             {
-                FullName = fullName,
-                Age = age,
-                City = city,
-                Email = email,
-                PhoneNumber = phoneNumber,
+                throw new ArgumentNullException(nameof(newUser), "New user must exist");
+            }
+            _dataAccess.SaveUser(newUser);
+        }
 
-            };
-            SqliteDataAccess.SaveUser(newUser);
+        public bool IsUserExist(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+            {
+                throw new ArgumentNullException(nameof(fullName), "fullName must exist");
+            }
+            return _dataAccess.CheckFullName(fullName);
         }
     }
 }
