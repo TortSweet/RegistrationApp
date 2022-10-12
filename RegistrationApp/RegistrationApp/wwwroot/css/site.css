@@ -15,13 +15,13 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: #4fb2d8;
+    background-color: white;
 }
 
 .register-card {
     padding: 40px;
     width: 275px;
-    background-color: #ffffff;
+    background-color: whitesmoke;
     margin: 0 auto 10px;
     border-radius: 2px;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);

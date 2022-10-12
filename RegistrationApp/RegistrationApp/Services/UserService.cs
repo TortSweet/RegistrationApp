@@ -1,5 +1,4 @@
-﻿using RegistrationApp.Data;
-using RegistrationApp.Data.Entities;
+﻿using RegistrationApp.Data.Entities;
 using RegistrationApp.Services.Abstraction;
 
 namespace RegistrationApp.Services
@@ -10,7 +9,7 @@ namespace RegistrationApp.Services
 
         public UserService(ISqliteDataAccess dataAccess)
         {
-            _dataAccess = dataAccess;
+            _dataAccess = dataAccess ?? throw new ArgumentNullException("Access to Db must exist", nameof(dataAccess));
         }
 
         public IQueryable<User> GetUsersList()
@@ -20,21 +19,18 @@ namespace RegistrationApp.Services
             return users;
         }
 
-        public void SaveUser(User newUser)
+        public bool SaveUser(User newUser)
         {
             if (newUser == null)
             {
                 throw new ArgumentNullException(nameof(newUser), "New user must exist");
             }
-            _dataAccess.SaveUser(newUser);
+            var result = _dataAccess.SaveUser(newUser);
+            return result;
         }
 
         public bool IsUserExist(string fullName)
         {
-            if (string.IsNullOrWhiteSpace(fullName))
-            {
-                throw new ArgumentNullException(nameof(fullName), "fullName must exist");
-            }
             return _dataAccess.CheckFullName(fullName);
         }
     }

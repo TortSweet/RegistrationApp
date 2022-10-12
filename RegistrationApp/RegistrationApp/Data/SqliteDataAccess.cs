@@ -16,13 +16,14 @@ namespace RegistrationApp.Data
             return outPut.ToList();
         }
 
-        public void SaveUser(User newUser)
+        public bool SaveUser(User newUser)
         {
             using IDbConnection connection = new SQLiteConnection(LoadConnectionString());
-            connection.Execute(
+            var savedUser = connection.Execute(
                 "insert into Users (FullName, Age, City, Email, PhoneNumber) values (@FullName, @Age, @City, @Email, @PhoneNumber)",
                 newUser);
             connection.Close();
+            return savedUser == 1;
         }
 
         public bool CheckFullName(string fullName)

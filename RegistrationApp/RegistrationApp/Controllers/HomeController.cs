@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RegistrationApp.Models;
-using System.Diagnostics;
 using RegistrationApp.Data.Entities;
+using RegistrationApp.Models;
 using RegistrationApp.Services.Abstraction;
+using System.Diagnostics;
 
 namespace RegistrationApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        //private readonly ILogger<HomeController> _logger;
         private readonly IUserService _service;
 
-        public HomeController(IUserService service, ILogger<HomeController> logger)
+        public HomeController(IUserService service/*, ILogger<HomeController> logger*/)
         {
-            _logger = logger;
-            _service = service;
+            //_logger = logger ?? throw new ArgumentNullException("logger must exist", nameof(logger)); ;
+            _service = service ?? throw new ArgumentNullException(nameof(service), "service must exist");
         }
 
         public IActionResult Index(string sortingProp)
@@ -29,40 +29,34 @@ namespace RegistrationApp.Controllers
             ViewBag.PhoneNumberSortParm = string.IsNullOrEmpty(sortingProp) ? "PhoneNumber" : "";
 
 
-            switch (sortingProp)
-            {
-                case "FullName":
-                    userList = userList.OrderBy(item => item.FullName);
-                    break;
-                case "Id":
-                    userList = userList.OrderBy(item => item.Id);
-                    break;
-                case "Age":
-                    userList = userList.OrderBy(item => item.Age);
-                    break;
-                case "City":
-                    userList = userList.OrderBy(item => item.City);
-                    break;
-                case "Email":
-                    userList = userList.OrderBy(item => item.Email);
-                    break;
-                case "PhoneNumber":
-                    userList = userList.OrderBy(item => item.PhoneNumber);
-                    break;
-                default:
-                    break;
-            }
+            userList = SortUsers(userList, sortingProp);
 
             return View("Index", userList.ToArray());
         }
+
+        private IQueryable<User> SortUsers(IQueryable<User> userList, string property)
+        {
+            userList = property switch
+            {
+                "FullName" => userList.OrderBy(item => item.FullName),
+                "Id" => userList.OrderBy(item => item.Id),
+                "Age" => userList.OrderBy(item => item.Age),
+                "City" => userList.OrderBy(item => item.City),
+                "Email" => userList.OrderBy(item => item.Email),
+                "PhoneNumber" => userList.OrderBy(item => item.PhoneNumber),
+                _ => userList
+            };
+
+            return userList;
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateUser(User newUser)
         {
+            var result = _service.SaveUser(newUser);
 
-            _service.SaveUser(newUser);
-
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", result);
         }
         [HttpPost]
         public JsonResult CheckFullName([FromBody] string fullName)
