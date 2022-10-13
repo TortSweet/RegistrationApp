@@ -9,7 +9,7 @@ namespace RegistrationApp.Services
 
         public UserService(ISqliteDataAccess dataAccess)
         {
-            _dataAccess = dataAccess ?? throw new ArgumentNullException("Access to Db must exist", nameof(dataAccess));
+            _dataAccess = dataAccess ?? throw new ArgumentNullException(nameof(dataAccess), "Access to Db must exist");
         }
 
         public IQueryable<User> GetUsersList()

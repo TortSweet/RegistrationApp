@@ -8,12 +8,10 @@ namespace RegistrationApp.Controllers
 {
     public class HomeController : Controller
     {
-        //private readonly ILogger<HomeController> _logger;
         private readonly IUserService _service;
 
-        public HomeController(IUserService service/*, ILogger<HomeController> logger*/)
+        public HomeController(IUserService service)
         {
-            //_logger = logger ?? throw new ArgumentNullException("logger must exist", nameof(logger)); ;
             _service = service ?? throw new ArgumentNullException(nameof(service), "service must exist");
         }
 
