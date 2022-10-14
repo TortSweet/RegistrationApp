@@ -34,7 +34,7 @@ namespace RegistrationAppTests.Services
         }
 
         [TestMethod()]
-        public void GetUsersListTest()
+        public async Task GetUsersListTest()
         {
             var listUsers = new List<User>()
             {
@@ -51,44 +51,40 @@ namespace RegistrationAppTests.Services
             };
 
             _dataAccessMock.Setup(x =>
-                x!.LoadUsers()).Returns(listUsers);
+                x!.LoadUsersAsync(String.Empty)).ReturnsAsync(listUsers);
 
-            var result = _sut.GetUsersList().ToList();
+            var resultUsers = await _sut.GetUsersListAsync(String.Empty);
+            var result = resultUsers.ToArray();
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count());
+            Assert.IsNotNull(resultUsers);
+            Assert.AreEqual(2, resultUsers.Count());
             Assert.AreEqual(20, result[0].Age);
             Assert.AreEqual("+380111111111", result[0].PhoneNumber);
             Assert.AreEqual("TestOne TestTwo TestThree", result[1].FullName);
         }
 
         [TestMethod()]
-        public void SaveUserNullTest()
+        public async Task SaveUserNullTest()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => _sut.SaveUser(null!));
+            Assert.ThrowsException<ArgumentNullException>(() => _sut.SaveUserAsync(null!));
         }
 
+
+        //TODO : Review test
         [TestMethod()]
-        public void SaveUserTest()
+        public async Task SaveUserTest()
         {
-
-            _dataAccessMock.Setup(x
-                => x!.SaveUser(It.IsAny<User>())).Returns(true);
-
-            var result = _sut.SaveUser(user);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result, true);
+           await _sut.SaveUserAsync(user);
 
         }
 
         [TestMethod()]
-        public void IsUserExistTest()
+        public async Task IsUserExistTest()
         {
             _dataAccessMock.Setup(x
-                => x!.CheckFullName(It.IsAny<string>())).Returns(true);
+                => x!.IsFullNameExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
 
-            var result = _sut.IsUserExist("user");
+            var result = await _sut.IsUserExistAsync("user");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(result, true);

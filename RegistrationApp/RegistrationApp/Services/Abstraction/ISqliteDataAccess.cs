@@ -4,8 +4,8 @@ namespace RegistrationApp.Services.Abstraction
 {
     public interface ISqliteDataAccess
     {
-        public List<User> LoadUsers();
-        public bool SaveUser(User newUser);
-        public bool CheckFullName(string fullName);
+        public Task<IEnumerable<User>> LoadUsersAsync(string sortingProperty);
+        public Task SaveUserAsync(User newUser);
+        public Task<bool> IsFullNameExistsAsync(string fullName);
     }
 }

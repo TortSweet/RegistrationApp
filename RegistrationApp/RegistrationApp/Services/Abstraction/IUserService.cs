@@ -4,8 +4,8 @@ namespace RegistrationApp.Services.Abstraction
 {
     public interface IUserService
     {
-        public IQueryable<User> GetUsersList();
-        public bool SaveUser(User user);
-        public bool IsUserExist(string fullName);
+        public Task<IEnumerable<User>> GetUsersListAsync(string sortingProperty);
+        public Task SaveUserAsync(User newUser);
+        public Task<bool> IsUserExistAsync(string fullName);
     }
 }

@@ -18,7 +18,7 @@ namespace RegistrationAppTests.Controllers
             _sut = new HomeController(_serviceMock.Object!);
         }
 
-        private readonly User user = new User()
+        private static readonly User user = new ()
         {
             Age = 20,
             City = "Kyiv",
@@ -29,7 +29,7 @@ namespace RegistrationAppTests.Controllers
         };
 
         [TestMethod()]
-        public void IndexTest()
+        public async Task IndexTest()
         {
             var listUsers = new List<User>()
             {
@@ -45,31 +45,30 @@ namespace RegistrationAppTests.Controllers
                 }
             };
 
-            _serviceMock.Setup(x => x!.GetUsersList()).Returns(listUsers.AsQueryable);
+            _serviceMock.Setup(x => x!.GetUsersListAsync(String.Empty)).ReturnsAsync(listUsers.AsQueryable);
 
-            var result = _sut.Index("") as ViewResult;
+            var result = await _sut.Index("") as ViewResult;
 
             Assert.IsNotNull(result);
             Assert.AreEqual("Index", result.ViewName);
         }
 
         [TestMethod()]
-        public void CreateUserTest()
+        public async Task CreateUserTest()
         {
-            _serviceMock.Setup(x => x!.SaveUser(It.IsAny<User>())).Returns(true);
-            var result = _sut.CreateUser(user);
+            var result = await _sut.CreateUserAsync(user);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(typeof(RedirectToActionResult), result.GetType());
         }
 
         [TestMethod()]
-        public void CheckFullNameTest()
+        public async Task CheckFullNameTest()
         {
             _serviceMock.Setup(x
-                => x!.IsUserExist(It.IsAny<string>())).Returns(true);
+                => x!.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
 
-            var result = _sut.CheckFullName("user");
+            var result = await _sut.CheckFullNameAsync("user");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Value, true);

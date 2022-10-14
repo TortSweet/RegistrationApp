@@ -1,43 +1,63 @@
 ﻿using System.Data;
 using System.Data.SQLite;
 using Dapper;
+using Microsoft.Extensions.Options;
 using RegistrationApp.Data.Entities;
 using RegistrationApp.Services.Abstraction;
+using RegistrationApp.Settings;
 
 namespace RegistrationApp.Data
 {
     public class SqliteDataAccess : ISqliteDataAccess
     {
-        public List<User> LoadUsers()
+        private readonly SqlLiteConnection _sqlLiteConnection;
+        public SqliteDataAccess(IOptions<SqlLiteConnection> options)
         {
-            using IDbConnection connection = new SQLiteConnection(LoadConnectionString());
-            var outPut = connection.Query<User>("select * from Users", new DynamicParameters());
-            connection.Close();
-            return outPut.ToList();
+            _sqlLiteConnection = options.Value;
         }
 
-        public bool SaveUser(User newUser)
+        public async Task<IEnumerable<User>> LoadUsersAsync(string sortingProperty)
         {
-            using IDbConnection connection = new SQLiteConnection(LoadConnectionString());
-            var savedUser = connection.Execute(
+            using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
+            var outPut = (await connection.QueryAsync<User>("select * from Users", new DynamicParameters())).AsQueryable();
+
+            outPut = SortUsers(outPut, sortingProperty);
+
+            await connection.CloseAsync();
+            return outPut.ToArray();
+        }
+
+        public async Task SaveUserAsync(User newUser)
+        {
+            using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
+            var savedUser = await connection.ExecuteAsync(
                 "insert into Users (FullName, Age, City, Email, PhoneNumber) values (@FullName, @Age, @City, @Email, @PhoneNumber)",
                 newUser);
             connection.Close();
-            return savedUser == 1;
         }
 
-        public bool CheckFullName(string fullName)
+        public async Task<bool> IsFullNameExistsAsync(string fullName)
         {
-            using IDbConnection connection = new SQLiteConnection(LoadConnectionString());
-            var outPut = connection.QueryFirstOrDefault<User>("select * from Users where FullName == @FullName", new {FullName = fullName});
+            using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
+            var outPut = await connection.QueryFirstOrDefaultAsync<User>("select * from Users where FullName == @FullName", new {FullName = fullName});
             connection.Close();
             return outPut != null;
         }
 
-        private static string LoadConnectionString()
+        private static IQueryable<User> SortUsers(IQueryable<User> userList, string property)
         {
-            return
-                @"Data Source = UsersData.db";
+            userList = property switch
+            {
+                "FullName" => userList.OrderBy(item => item.FullName),
+                "Id" => userList.OrderBy(item => item.Id),
+                "Age" => userList.OrderBy(item => item.Age),
+                "City" => userList.OrderBy(item => item.City),
+                "Email" => userList.OrderBy(item => item.Email),
+                "PhoneNumber" => userList.OrderBy(item => item.PhoneNumber),
+                _ => userList
+            };
+
+            return userList;
         }
     }
 }

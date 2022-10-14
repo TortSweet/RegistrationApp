@@ -12,26 +12,25 @@ namespace RegistrationApp.Services
             _dataAccess = dataAccess ?? throw new ArgumentNullException(nameof(dataAccess), "Access to Db must exist");
         }
 
-        public IQueryable<User> GetUsersList()
+        public Task<IEnumerable<User>> GetUsersListAsync(string sortingProperty)
         {
-            var users = _dataAccess.LoadUsers().AsQueryable();
+            return _dataAccess.LoadUsersAsync(sortingProperty);
 
-            return users;
         }
 
-        public bool SaveUser(User newUser)
+        public Task SaveUserAsync(User newUser)
         {
             if (newUser == null)
             {
                 throw new ArgumentNullException(nameof(newUser), "New user must exist");
             }
-            var result = _dataAccess.SaveUser(newUser);
-            return result;
+
+            return _dataAccess.SaveUserAsync(newUser);
         }
 
-        public bool IsUserExist(string fullName)
+        public Task<bool> IsUserExistAsync(string fullName)
         {
-            return _dataAccess.CheckFullName(fullName);
+            return _dataAccess.IsFullNameExistsAsync(fullName);
         }
     }
 }

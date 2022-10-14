@@ -15,9 +15,9 @@ namespace RegistrationApp.Controllers
             _service = service ?? throw new ArgumentNullException(nameof(service), "service must exist");
         }
 
-        public IActionResult Index(string sortingProp)
+        public async Task<IActionResult> Index(string sortingProp)
         {
-            var userList = _service.GetUsersList();
+            var userList = await _service.GetUsersListAsync(sortingProp);
 
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortingProp) ? "FullName" : "";
             ViewBag.IdSortParm = string.IsNullOrEmpty(sortingProp) ? "Id" : "";
@@ -26,40 +26,21 @@ namespace RegistrationApp.Controllers
             ViewBag.EmailSortParm = string.IsNullOrEmpty(sortingProp) ? "Email" : "";
             ViewBag.PhoneNumberSortParm = string.IsNullOrEmpty(sortingProp) ? "PhoneNumber" : "";
 
-
-            userList = SortUsers(userList, sortingProp);
-
             return View("Index", userList.ToArray());
-        }
-
-        private IQueryable<User> SortUsers(IQueryable<User> userList, string property)
-        {
-            userList = property switch
-            {
-                "FullName" => userList.OrderBy(item => item.FullName),
-                "Id" => userList.OrderBy(item => item.Id),
-                "Age" => userList.OrderBy(item => item.Age),
-                "City" => userList.OrderBy(item => item.City),
-                "Email" => userList.OrderBy(item => item.Email),
-                "PhoneNumber" => userList.OrderBy(item => item.PhoneNumber),
-                _ => userList
-            };
-
-            return userList;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateUser(User newUser)
+        public async Task<IActionResult> CreateUserAsync(User newUser)
         {
-            var result = _service.SaveUser(newUser);
+            await _service.SaveUserAsync(newUser);
 
-            return RedirectToAction("Index", result);
+            return RedirectToAction("Index");
         }
         [HttpPost]
-        public JsonResult CheckFullName([FromBody] string fullName)
+        public async Task<JsonResult> CheckFullNameAsync([FromBody] string fullName)
         {
-            var isValid = _service.IsUserExist(fullName);
+            var isValid = await _service.IsUserExistAsync(fullName);
             return Json(isValid);
         }
 
