@@ -13,12 +13,12 @@ namespace RegistrationApp.Data
         private readonly SqlLiteConnection _sqlLiteConnection;
         public SqliteDataAccess(IOptions<SqlLiteConnection> options)
         {
-            _sqlLiteConnection = options.Value;
+            _sqlLiteConnection = options.Value ?? throw new ArgumentNullException("Connetction string must exist", nameof(options.Value));
         }
 
         public async Task<IEnumerable<User>> LoadUsersAsync(string sortingProperty)
         {
-            using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
+            await using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
             var outPut = (await connection.QueryAsync<User>("select * from Users", new DynamicParameters())).AsQueryable();
 
             outPut = SortUsers(outPut, sortingProperty);
@@ -29,7 +29,7 @@ namespace RegistrationApp.Data
 
         public async Task SaveUserAsync(User newUser)
         {
-            using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
+            await using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
             var savedUser = await connection.ExecuteAsync(
                 "insert into Users (FullName, Age, City, Email, PhoneNumber) values (@FullName, @Age, @City, @Email, @PhoneNumber)",
                 newUser);
@@ -38,7 +38,7 @@ namespace RegistrationApp.Data
 
         public async Task<bool> IsFullNameExistsAsync(string fullName)
         {
-            using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
+            await using var connection = new SQLiteConnection(_sqlLiteConnection.ConnectionString);
             var outPut = await connection.QueryFirstOrDefaultAsync<User>("select * from Users where FullName == @FullName", new {FullName = fullName});
             connection.Close();
             return outPut != null;

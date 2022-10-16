@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using RegistrationApp.Data;
 using RegistrationApp.Services;
 using RegistrationApp.Services.Abstraction;
@@ -9,7 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddTransient<ISqliteDataAccess, SqliteDataAccess>();
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.Configure<SqlLiteConnection>(builder.Configuration.GetSection("ConnectionStrings:Default"));
+
+builder.Services.Configure<SqlLiteConnection>(x => x.ConnectionString = builder.Configuration.GetSection("ConnectionStrings:default").Value);
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
