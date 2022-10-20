@@ -12,10 +12,9 @@ namespace RegistrationApp.Services
             _dataAccess = dataAccess ?? throw new ArgumentNullException(nameof(dataAccess), "Access to Db must exist");
         }
 
-        public Task<IEnumerable<User>> GetUsersListAsync(string sortingProperty)
+        public async Task<IEnumerable<User>> GetUsersListAsync(string sortingProperty)
         {
-            return _dataAccess.LoadUsersAsync(sortingProperty);
-
+            return await _dataAccess.LoadUsersAsync(sortingProperty);
         }
 
         public Task SaveUserAsync(User newUser)

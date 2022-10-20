@@ -33,7 +33,7 @@ namespace RegistrationApp.Data
             var savedUser = await connection.ExecuteAsync(
                 "insert into Users (FullName, Age, City, Email, PhoneNumber) values (@FullName, @Age, @City, @Email, @PhoneNumber)",
                 newUser);
-            connection.Close();
+            await connection.CloseAsync();
         }
 
         public async Task<bool> IsFullNameExistsAsync(string fullName)
